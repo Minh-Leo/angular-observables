@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
 
 import { interval, Observable, Observer, Subscription } from "rxjs";
+import { map, filter } from "rxjs/operators";
 
 @Component({
   selector: "app-home",
@@ -33,20 +34,30 @@ export class HomeComponent implements OnInit, OnDestroy {
       }, 1000);
     });
 
-    customIntervalObs.subscribe(
-      (data) => {
-        console.log(data);
-      },
-      (error) => {
-        console.log(error.message);
-      },
-      () => {
-        console.log("Completed counting to 2");
-      }
-    );
+    // How use operators in observable with pipe
+    this.firstSubscription = customIntervalObs
+      .pipe(
+        filter((data) => {
+          return data > 0;
+        }),
+        map((data: number) => {
+          return `round  ${data}`;
+        })
+      )
+      .subscribe(
+        (data) => {
+          console.log(data);
+        },
+        (error) => {
+          console.log(error.message);
+        },
+        () => {
+          console.log("Completed counting to 2");
+        }
+      );
   }
 
   ngOnDestroy(): void {
-    // this.firstSubscription.unsubscribe();
+    this.firstSubscription.unsubscribe();
   }
 }
